@@ -12,7 +12,10 @@ import { Image as ImageLayer, Tile as TileLayer } from "ol/layer";
 import View from "ol/View";
 import { OSM, TileArcGISRest } from "ol/source";
 import ImageArcGISRest from "ol/source/ImageArcGISRest";
-// import XYZ from "ol/source/XYZ";
+import TileGrid from 'ol/tilegrid/TileGrid';
+import { get } from "ol/proj";
+import XYZ from "ol/source/XYZ";
+
 // const url =
 //   "https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/" +
 //   "Specialty/ESRI_StateCityHighway_USA/MapServer";
@@ -38,13 +41,14 @@ const layers = [
       url: url,
     }),
   }),
-  //   new TileLayer({
-  //     source: new XYZ({
-  //       url: url + "/tile/{z}/{y}/{x}",
-  //     }),
-  //   }),
+  new TileLayer({
+    source: new XYZ({
+      url: url + "/tile/{z}/{y}/{x}",
+    }),
+  }),
 ];
 
+console.log(layers);
 export default {
   data() {
     return {
@@ -56,12 +60,54 @@ export default {
   },
   methods: {
     initMap() {
+      let projection = get("EPSG:4326");
+      let tileUrl =
+        "https://localhost:6443/arcgis/rest/services/xiaoshuidian/MapServer/tile/{z}/{y}/{x}";
+      // 原点
+      let origin = [-400.0, 399.9999999999998];
+      // 分辨率
+      let resolutions = [
+        0.01903568804664224, 0.00951784402332112, 0.00475892201166056,
+        0.00237946100583028, 0.00118973050291514,
+      ];
+
+      let fullExtent = [
+        109.61789669563149, 20.11893865177325, 117.41810154021985,
+        25.533741857054633,
+      ];
+      let tileGrid = new TileGrid({
+        tileSize: 256,
+        origin: origin,
+        extent: fullExtent,
+        resolutions: resolutions,
+      });
+      // 瓦片数据源
+      let tileArcGISXYZ = new XYZ({
+        tileGrid: tileGrid,
+        projection: projection,
+        url: tileUrl,
+      });
       this.map = new Map({
-        layers: layers,
+        layers: [
+          new TileLayer({
+            source: new OSM(),
+          }),
+          // 瓦片图层
+          new TileLayer({
+            source: tileArcGISXYZ,
+          }),
+        ],
         target: "map",
         view: new View({
-          center: [-10997148, 4569099],
-          zoom: 4,
+          center: [113.512288, 22.865743],
+          resolutions: resolutions,
+          // 注意：此处指定缩放级别不能通过zoom来指定，指定了也无效，必须通过resolution来指定
+          // 官方API说明：
+          // Resolutions to determine the resolution constraint.
+          // If set the maxResolution, minResolution, minZoom, maxZoom, and zoomFactor options are ignored.
+          resolution: 3.433227441249574e-4,
+          projection: projection,
+          extent: fullExtent,
         }),
       });
 

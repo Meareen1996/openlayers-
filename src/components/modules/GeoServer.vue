@@ -9,7 +9,7 @@
 
 <template>
   <div id="map-container"
-       style="width:100%;height:100%;">
+       style="width:100%;height:100vh;">
   </div>
 </template>
 <script>
@@ -87,7 +87,7 @@ export default {
       // 加载 GeoServer 发布的 wms 服务
       let wmsLayer = new TileLayer({
         source: new TileWMS({
-          url: 'https://ahocevar.com/geoserver/wms', // geoserver 服务地址
+          url: 'https://localhost:6443/arcgis/rest/services/xiaoshuidian/MapServer/wms', // geoserver 服务地址
           params: { 'LAYERS': 'topp:states', 'TILED': true },
           serverType: "geoserver",
           transition: 0,

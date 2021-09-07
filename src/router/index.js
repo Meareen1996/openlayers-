@@ -11,6 +11,7 @@ import Cluster from "@/components/modules/Cluster";
 import Boundary from "@/components/modules/boundary";
 import Typhoon from "@/components/modules/taifeng";
 import PicLayer from "@/components/modules/picLayer";
+import arcgisServer from "@/components/modules/arcgisServer";
 
 Vue.use(VueRouter);
 
@@ -81,6 +82,12 @@ const routes = [
     name: "polymerization",
     title: "聚合",
     component: Cluster,
+  },
+  {
+    path: "/arcgisServer",
+    name: "arcgisServer",
+    title: "arcgis服务",
+    component: arcgisServer,
   },
 ];
 
