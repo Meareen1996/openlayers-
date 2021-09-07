@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Icon Symbolizer</title>
+  <link rel="stylesheet" href="https://openlayers.org/en/v3.20.1/css/ol.css" rel="external nofollow" type="text/css">
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <script src="https://openlayers.org/en/v3.20.1/build/ol.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="external nofollow" >
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <style>
+   #map {
+    position: relative;
+   }
+   #popup {
+    cursor: pointer;
+   }
+  </style>
+ </head>
+ <body>
+  <div id="map" class="map"></div>
+ <div id="styleType">
+   
+ </div>
+  <script>
+    //水纹扩散
+ var bingMap = new ol.layer.Tile({
+   source :new ol.source.XYZ({
+   crossOrigin: 'anonymous',
+    url:'http://www.google.cn/maps/vt?lyrs=m@189&gl=cn&x={x}&y={y}&z={z}'
+    })
+ });
+ var map = new ol.Map({
+    layers: [bingMap],
+    target: 'map',
+    view: new ol.View({
+     center: ol.proj.transform([112.91, 28.21], 'EPSG:4326', 'EPSG:3857'),
+     zoom: 5
+    })
+   });
+ 
+   var source = new ol.source.Vector({
+    wrapX: false
+   });
+   var vector = new ol.layer.Vector({
+    source: source
+   });
+   map.addLayer(vector);
+ 
+   function addRandomFeature() {
+    var geom = new ol.geom.Point(ol.proj.fromLonLat([112.91, 28.21]));
+    var feature = new ol.Feature(geom);
+    source.addFeature(feature);
+    console.log("source",source)
+   }
+ 
+   var duration = 1000;
+ 
+ 
+   function flash(feature) {
+    var start = new Date().getTime();
+ //进行地图水波渲染
+    var listenerKey = map.on('postcompose', animate);
+     
+    function animate(event) {
+  //获取几何图形
+     var vectorContext = event.vectorContext;
+    //  console.log("event",event)
+  //获取当前渲染帧状态
+     var frameState = event.frameState;
+  //添加一个OpenLayers.Geometry几何对象
+     var flashGeom = feature.getGeometry().clone();
+  //渲染帧状已占时间
+     var elapsed = frameState.time - start;
+  //已占比率
+     var elapsedRatio = elapsed / duration;
+     // radius半径为5结束为30
+     var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
+  //不透渐变消失
+     var opacity = ol.easing.easeOut(1 - elapsedRatio);
+     //Circle样式
+     var style = new ol.style.Style({
+      image: new ol.style.Circle({
+       radius: radius,
+       stroke: new ol.style.Stroke({
+        color: 'rgba(255, 0, 0, ' + opacity + ')',
+        width: 1 + opacity
+       })
+      })
+     });
+     //给几何图形添加样式
+     vectorContext.setStyle(style);
+  //将几何体渲染到画布中
+     vectorContext.drawGeometry(flashGeom);
+     if (elapsed > duration) {
+      start = frameState.time ;
+      ;
+     }
+     //请求地图渲染（在下一个动画帧处）
+     map.render();
+    }
+   }
+   //数据源添加图层
+   source.on('addfeature', function(e) {
+    flash(e.feature);
+   });
+ 
+  addRandomFeature() 
+   </script>
+ </body>
+</html>
