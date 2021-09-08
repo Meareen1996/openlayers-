@@ -12,7 +12,7 @@ import { Image as ImageLayer, Tile as TileLayer } from "ol/layer";
 import View from "ol/View";
 import { OSM, TileArcGISRest } from "ol/source";
 import ImageArcGISRest from "ol/source/ImageArcGISRest";
-import TileGrid from 'ol/tilegrid/TileGrid';
+import TileGrid from "ol/tilegrid/TileGrid";
 import { get } from "ol/proj";
 import XYZ from "ol/source/XYZ";
 
@@ -62,23 +62,24 @@ export default {
     initMap() {
       let projection = get("EPSG:4326");
       let tileUrl =
-        "https://localhost:6443/arcgis/rest/services/xiaoshuidian/MapServer/tile/{z}/{y}/{x}";
+        "https://localhost:6443/arcgis/rest/services/xiaoshuidianooooo/MapServer/tile/{z}/{y}/{x}";
       // 原点
       let origin = [-400.0, 399.9999999999998];
       // 分辨率
       let resolutions = [
         0.01903568804664224, 0.00951784402332112, 0.00475892201166056,
-        0.00237946100583028, 0.00118973050291514,
+        0.00237946100583028, 0.00118973050291514, 5.9486525145757e-4,
+        2.97432625728785e-4, 1.5228550437313792e-4,
       ];
 
-      let fullExtent = [
-        109.61789669563149, 20.11893865177325, 117.41810154021985,
-        25.533741857054633,
-      ];
+      // let fullExtent = [
+      //   109.61789669563149, 20.11893865177325, 117.41810154021985,
+      //   25.533741857054633,
+      // ];
       let tileGrid = new TileGrid({
         tileSize: 256,
         origin: origin,
-        extent: fullExtent,
+        // extent: fullExtent,
         resolutions: resolutions,
       });
       // 瓦片数据源
@@ -105,9 +106,9 @@ export default {
           // 官方API说明：
           // Resolutions to determine the resolution constraint.
           // If set the maxResolution, minResolution, minZoom, maxZoom, and zoomFactor options are ignored.
-          resolution: 3.433227441249574e-4,
+          resolution: 0.00475892201166056,
           projection: projection,
-          extent: fullExtent,
+          // extent: fullExtent,
         }),
       });
 

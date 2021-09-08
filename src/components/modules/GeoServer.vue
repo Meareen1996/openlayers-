@@ -42,10 +42,10 @@ export default {
         // GetFeatureInfo
         let view = this.map.getView()
         let wmsSource = new TileWMS({
-          url: "https://ahocevar.com/geoserver/wms",
-          params: { 'LAYERS': 'topp:states', 'TILED': true },
-          serverType: "geoserver",
-          transition: 0,
+          url: "https://localhost:6443/arcgis/services/xiaoshuidianooooo/MapServer/WMSServer",
+          // params: { 'LAYERS': 'topp:states', 'TILED': true },
+          // serverType: "geoserver",
+          // transition: 0,
         })
         let viewResolution = (view.getResolution())
         let url = wmsSource.getFeatureInfoUrl(
